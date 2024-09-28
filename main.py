@@ -55,11 +55,12 @@ def login(driver):
     # Wait
     wait = 3
     time.sleep(wait)
-    print(f"tunggu {wait} detik sebelum input NIM: {nim} dan password: {password_print}")
+    print(f"tunggu {wait} detik")
 
     # Input
     nim_id.send_keys(nim)
     password_id.send_keys(password)
+    print(f"input NIM: {nim} dan password: {password_print}")
 
     # Submit
     try:
@@ -72,6 +73,10 @@ def login(driver):
         print(f"Terdapat kesalahan: {e}")
     time.sleep(wait)
 
+def absen(driver):
+    jadwal_url='https://siakad.stekom.ac.id/jadwalkuliahmahasiswa'
+    driver.get(jadwal_url)
+
 def main():
     options = Options()
     options.binary_location = "/usr/bin/brave-browser"
@@ -82,7 +87,7 @@ def main():
 
     # Panggil fungsi login
     login(driver)
-
+    absen(driver)
     driver.quit()
 
 if __name__ == "__main__":
