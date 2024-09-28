@@ -1,4 +1,4 @@
-## `login_detail.txt`
+## File untuk NPM dan Password
 
 Buat file bernama `login_detail.txt`
 
