@@ -2,7 +2,7 @@
 
 Buat file bernama `login_detail.txt`
 
-## 📄 Pastikan file ini mengikuti format di bawah ini:
+## Pastikan file ini mengikuti format di bawah ini:
 
 | Nama       | Deskripsi                  |
 | ---------- | -------------------------- |
