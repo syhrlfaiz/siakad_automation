@@ -33,8 +33,16 @@ def login_info(info):
             raise ValueError("File tidak ada")
 
 def login(driver):
+    login_url = 'https://siakad.stekom.ac.id/loginsiakad/login'
     login_detail = 'login_detail.txt'
     nim, password = login_info(login_detail)
+
+    # Membuka halaman login
+    driver.get(login_url)
+    login_content = driver.page_source
+    save_html_as_txt(login_content)
+    title = title_info(driver)
+    print(f"{title}")
 
     # Buat string bintang berdasarkan panjang password
     password_print = '*' * len(password)
@@ -65,8 +73,6 @@ def login(driver):
     time.sleep(wait)
 
 def main():
-    login_url = 'https://siakad.stekom.ac.id/loginsiakad/login'
-    
     options = Options()
     options.binary_location = "/usr/bin/brave-browser"
 
@@ -74,16 +80,9 @@ def main():
     service = Service('/usr/local/bin/chromedriver-linux64/chromedriver')
     driver = webdriver.Chrome(service=service, options=options)
 
-    # Membuka halaman login
-    driver.get(login_url)
-    login_content = driver.page_source
-    save_html_as_txt(login_content)
-    title = title_info(driver)
-    print(f"{title}")
-
     # Panggil fungsi login
     login(driver)
-    
+
     driver.quit()
 
 if __name__ == "__main__":
