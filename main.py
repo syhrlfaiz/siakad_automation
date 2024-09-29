@@ -2,6 +2,7 @@ import requests
 import tempfile
 import os
 import time
+from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -76,6 +77,36 @@ def login(driver):
 def absen(driver):
     jadwal_url='https://siakad.stekom.ac.id/jadwalkuliahmahasiswa'
     driver.get(jadwal_url)
+    print(f"berhasil akses : {jadwal_url}")
+
+    tunggu=5
+    print(f"tunggu {tunggu} detik")
+    time.sleep(tunggu)
+
+    # today=datetime.now().strftime("%A")
+    # # translate hari ke bahasa
+    # translate={
+    #     "Monday": "Senin",
+    #     "Tuesday": "Selasa",
+    #     "Wednesday": "Rabu",
+    #     "Thursday": "Kamis",
+    #     "Friday": "Jumat",
+    #     "Saturday": "Sabtu",
+    #     "Sunday": "Minggu"
+    # }
+    # hari=translate.get(today)
+    hari="Selasa"
+    print(f"hari : {hari}")
+
+    # jadwal_divs = driver.find_elements(By.XPATH, f"//div[contains(text(), '{hari}')]")
+
+    # if jadwal_divs:
+    #     print(f"Ditemukan {len(jadwal_divs)} elemen untuk hari {hari}:")
+    #     for i, jadwal_div in enumerate(jadwal_divs, start=1):
+    #         print(f"Element {i}:")
+    #         print(jadwal_div.get_attribute('outerHTML'))  # Mencetak seluruh HTML dari elemen yang ditemukan
+    # else:
+    #     print(f"Tidak ditemukan elemen untuk hari {hari}")
 
 def main():
     options = Options()
