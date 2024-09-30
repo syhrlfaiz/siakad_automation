@@ -84,22 +84,22 @@ def jadwal(driver):
     print(f"berhasil akses : {jadwal_url}")
 
 def get_kode_kelas(hari):
-    # aktifkan ini jika ingin otomatis
-    today=datetime.now().strftime("%A")
-    # translate hari ke bahasa
-    translate={
-        "Monday": "Senin",
-        "Tuesday": "Selasa",
-        "Wednesday": "Rabu",
-        "Thursday": "Kamis",
-        "Friday": "Jumat",
-        "Saturday": "Sabtu",
-        "Sunday": "Minggu"
-    }
-    hari=translate.get(today)
+    # # aktifkan ini jika ingin otomatis
+    # today=datetime.now().strftime("%A")
+    # # translate hari ke bahasa
+    # translate={
+    #     "Monday": "Senin",
+    #     "Tuesday": "Selasa",
+    #     "Wednesday": "Rabu",
+    #     "Thursday": "Kamis",
+    #     "Friday": "Jumat",
+    #     "Saturday": "Sabtu",
+    #     "Sunday": "Minggu"
+    # }
+    # hari=translate.get(today)
 
     # aktifkan ini jik ingin hari manual
-    # hari = "Rabu"
+    hari = "Rabu"
     print(f"hari : {hari}")
     
     # Mengembalikan kode kelas berdasarkan hari
@@ -135,7 +135,7 @@ def masuk_absen(driver, kode_kelas):
         print(f"Kode kelas tidak ditemukan atau error: {str(e)}")
 
 def absen(driver):
-    hari="Selasa"
+    hari=None
     kode_kelas_1, kode_kelas_2=get_kode_kelas(hari)
     if kode_kelas_1:
         print(f"masuk {kode_kelas_1}")
@@ -153,13 +153,28 @@ def main():
 
     # Inisialisasi webdriver
     service = Service('/usr/local/bin/chromedriver-linux64/chromedriver')
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = None
 
-    # Panggil fungsi login
-    login(driver)
-    jadwal(driver)
-    absen(driver)
-    driver.quit()
+    try:
+        driver = webdriver.Chrome(service=service, options=options)
+        
+        # Panggil fungsi login
+        login(driver)
+        jadwal(driver)
+        absen(driver)
+        print("Proses selesai tanpa error.")
+    
+    except Exception as e:
+        print(f"Terjadi error: {e}")
+    
+    finally:
+        if driver:
+            try:
+                driver.close()  # Tutup tab yang aktif
+                driver.quit()   # Tutup seluruh sesi browser
+                print("Browser dan driver ditutup.")
+            except Exception as e:
+                print(f"Error saat menutup browser: {e}")
 
 if __name__ == "__main__":
     main()
