@@ -74,39 +74,78 @@ def login(driver):
         print(f"Terdapat kesalahan: {e}")
     time.sleep(wait)
 
-def absen(driver):
+def jadwal(driver):
     jadwal_url='https://siakad.stekom.ac.id/jadwalkuliahmahasiswa'
-    driver.get(jadwal_url)
-    print(f"berhasil akses : {jadwal_url}")
-
     tunggu=5
     print(f"tunggu {tunggu} detik")
     time.sleep(tunggu)
+    
+    driver.get(jadwal_url)
+    print(f"berhasil akses : {jadwal_url}")
 
-    # today=datetime.now().strftime("%A")
-    # # translate hari ke bahasa
-    # translate={
-    #     "Monday": "Senin",
-    #     "Tuesday": "Selasa",
-    #     "Wednesday": "Rabu",
-    #     "Thursday": "Kamis",
-    #     "Friday": "Jumat",
-    #     "Saturday": "Sabtu",
-    #     "Sunday": "Minggu"
-    # }
-    # hari=translate.get(today)
-    hari="Selasa"
+def get_kode_kelas(hari):
+    # aktifkan ini jika ingin otomatis
+    today=datetime.now().strftime("%A")
+    # translate hari ke bahasa
+    translate={
+        "Monday": "Senin",
+        "Tuesday": "Selasa",
+        "Wednesday": "Rabu",
+        "Thursday": "Kamis",
+        "Friday": "Jumat",
+        "Saturday": "Sabtu",
+        "Sunday": "Minggu"
+    }
+    hari=translate.get(today)
+
+    # aktifkan ini jik ingin hari manual
+    # hari = "Rabu"
     print(f"hari : {hari}")
+    
+    # Mengembalikan kode kelas berdasarkan hari
+    if hari == 'Senin':
+        return [None]
+    elif hari == 'Selasa':
+        return ['54955']
+    elif hari == 'Rabu':
+        return ['54869', '53534']
+    elif hari == 'Kamis':
+        return ['54870', '53535']
+    elif hari == 'Jumat':
+        return ['54871', '54868']
+    else:
+        return[]
 
-    # jadwal_divs = driver.find_elements(By.XPATH, f"//div[contains(text(), '{hari}')]")
+def masuk_absen(driver, kode_kelas):
+    try:
+        # Cari elemen dengan style tertentu dan teks 'kode_kelas'
+        row_element = driver.find_element(By.XPATH, f"//div[@style='padding-top: 5px;padding-bottom: 5px;border-bottom: 1px solid #f4f4f4;']//strong[contains(text(), '{kode_kelas}')]")
 
-    # if jadwal_divs:
-    #     print(f"Ditemukan {len(jadwal_divs)} elemen untuk hari {hari}:")
-    #     for i, jadwal_div in enumerate(jadwal_divs, start=1):
-    #         print(f"Element {i}:")
-    #         print(jadwal_div.get_attribute('outerHTML'))  # Mencetak seluruh HTML dari elemen yang ditemukan
-    # else:
-    #     print(f"Tidak ditemukan elemen untuk hari {hari}")
+        # Cari tombol 'Masuk Kelas' di dalam elemen yang ditemukan
+        masuk_kelas_button = row_element.find_element(By.XPATH, ".//following::a[contains(@class, 'btn-sm btn-primary')]")
+        kelas_link = masuk_kelas_button.get_attribute('href')
+
+        print(f"Link Masuk Kelas: {kelas_link}")
+
+        # Arahkan driver ke link "Masuk Kelas"
+        driver.get(kelas_link)
+        print(f"Berhasil mengakses: {kelas_link}")
+
+    except Exception as e:
+        print(f"Kode kelas tidak ditemukan atau error: {str(e)}")
+
+def absen(driver):
+    hari="Selasa"
+    kode_kelas_1, kode_kelas_2=get_kode_kelas(hari)
+    if kode_kelas_1:
+        print(f"masuk {kode_kelas_1}")
+        masuk_absen(driver, kode_kelas_1)
+
+        time.sleep(5)
+        jadwal(driver)
+    if kode_kelas_2:
+        print(f"masuk {kode_kelas_2}")
+        masuk_absen(driver, kode_kelas_2)
 
 def main():
     options = Options()
@@ -118,6 +157,7 @@ def main():
 
     # Panggil fungsi login
     login(driver)
+    jadwal(driver)
     absen(driver)
     driver.quit()
 
