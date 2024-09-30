@@ -83,7 +83,7 @@ def jadwal(driver):
     driver.get(jadwal_url)
     print(f"berhasil akses : {jadwal_url}")
 
-def get_kode_kelas(hari):
+def get_kode_kelas():
     # # aktifkan ini jika ingin otomatis
     # today=datetime.now().strftime("%A")
     # # translate hari ke bahasa
@@ -135,8 +135,7 @@ def masuk_absen(driver, kode_kelas):
         print(f"Kode kelas tidak ditemukan atau error: {str(e)}")
 
 def absen(driver):
-    hari=None
-    kode_kelas_1, kode_kelas_2=get_kode_kelas(hari)
+    kode_kelas_1, kode_kelas_2=get_kode_kelas()
     if kode_kelas_1:
         print(f"masuk {kode_kelas_1}")
         masuk_absen(driver, kode_kelas_1)
