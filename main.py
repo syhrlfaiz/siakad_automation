@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 def save_html_as_txt(response_text):
     file_path = 'login_content.txt'  # Tentukan path atau nama file
@@ -81,7 +82,7 @@ def jadwal(driver):
     time.sleep(tunggu)
     
     driver.get(jadwal_url)
-    print(f"berhasil akses : {jadwal_url}")
+    print(f"berhasil masuk {jadwal_url}")
 
 def get_kode_kelas():
     # # aktifkan ini jika ingin otomatis
@@ -98,15 +99,15 @@ def get_kode_kelas():
     # }
     # hari=translate.get(today)
 
-    # aktifkan ini jik ingin hari manual
-    hari = "Rabu"
+    # aktifkan ini jika ingin hari manual
+    hari = "Jumat"
     print(f"hari : {hari}")
     
     # Mengembalikan kode kelas berdasarkan hari
     if hari == 'Senin':
         return [None]
     elif hari == 'Selasa':
-        return ['54955']
+        return ['54955',None]
     elif hari == 'Rabu':
         return ['54869', '53534']
     elif hari == 'Kamis':
@@ -134,17 +135,105 @@ def masuk_absen(driver, kode_kelas):
     except Exception as e:
         print(f"Kode kelas tidak ditemukan atau error: {str(e)}")
 
+def pertemuan(driver):
+    for pertemuan in range(1, 17):  # Cek dari P1 hingga P16
+        berhasil = buka_pertemuan(driver, pertemuan)
+        if berhasil:
+            print(f"Absen selesai di Pertemuan P{pertemuan}")
+            break  # Berhenti jika absen berhasil
+    else:
+        print("Tidak ada absensi yang ditemukan dari P1 sampai P16")
+
+def buka_pertemuan(driver, pertemuan):
+    try:
+        # Cari elemen berdasarkan pertemuan P1, P2, ..., P16
+        pertemuan_element = driver.find_element(By.XPATH, f"//span[@class='modelhp pull-right' and contains(text(), 'P{pertemuan}')]/parent::a")
+        # Ambil URL dari href di elemen
+        pertemuan_link = pertemuan_element.get_attribute("href")
+        print(f"Link Pertemuan P{pertemuan}: {pertemuan_link}")
+        
+        # Arahkan driver ke URL yang didapat
+        driver.get(pertemuan_link)
+        print(f"Berhasil mengakses P{pertemuan}")
+        
+        # Tunggu sebentar untuk halaman load
+        time.sleep(2)
+        
+        # Klik tab "Absensi"
+        absensi_tab = driver.find_element(By.XPATH, "//a[@data-toggle='tab' and @href='#pesertakelaskelas']")
+        absensi_tab.click()
+        print("Berhasil klik tab Absensi")
+
+        # Tunggu agar tab Absensi terbuka
+        time.sleep(2)
+        
+        # Coba temukan tombol absensi
+        try:
+            absensi_button = driver.find_element(By.XPATH, "//button[@class='btn bnt-sm btn-primary' and contains(text(), 'Absensi sekarang')]")
+            absensi_button.click()
+            print(f"Berhasil klik Absen Sekarang")
+
+            print("tunggu 5 detik")
+            time.sleep(5)
+            # pindah iframe
+            driver.switch_to.frame("modaliframepresensi")
+            print("switch iframe")
+
+            # Klik elemen label Baik
+            baik_element = driver.find_element(By.XPATH, "//label[@onclick='cekdata(2)']")
+            baik_element.click()
+            print("Berhasil klik opsi 'Baik'")
+
+            try:
+                time.sleep(2)
+                # Coba temukan elemen 'Akan Hadir'
+                akan_hadir_button = driver.find_element(By.XPATH, "//li[@id='pp1']")
+                # Klik elemen tersebut
+                akan_hadir_button.click()
+                print("Berhasil klik 'Akan Hadir'")
+
+            except NoSuchElementException:
+                print("Tombol 'Akan Hadir' tidak ditemukan, melanjutkan ke langkah berikutnya.")
+
+
+            # Tunggu hingga tombol Absen Daring (Online) muncul, lalu klik
+            absen_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[@onclick='simpanreview(1)']"))
+            )
+
+            absen_button.click()
+            print("Berhasil klik tombol 'Absen Daring (Online)'")
+
+            driver.switch_to.default_content()
+            print("Berhasil keluar dari iframe")
+            # driver.send_keys(Keys.ENTER)
+
+            return True  # Berhasil absen
+        except:
+            print(f"Tidak ada tombol absensi di Pertemuan P{pertemuan}")
+            return False  # Tidak ada tombol absensi
+    except Exception as e:
+        print(f"Error pada Pertemuan P{pertemuan}: {str(e)}")
+    return False  # Ada kesalahan
+
+
 def absen(driver):
     kode_kelas_1, kode_kelas_2=get_kode_kelas()
     if kode_kelas_1:
         print(f"masuk {kode_kelas_1}")
         masuk_absen(driver, kode_kelas_1)
-
         time.sleep(5)
+        pertemuan(driver) #memanggil pertemuan
+        time.sleep(5)
+        print("kembali ke Jadwal")
         jadwal(driver)
     if kode_kelas_2:
+        time.sleep(5)
         print(f"masuk {kode_kelas_2}")
         masuk_absen(driver, kode_kelas_2)
+        time.sleep(5)
+        pertemuan(driver) #memanggil pertemuan
+        time.sleep(5)
 
 def main():
     options = Options()
