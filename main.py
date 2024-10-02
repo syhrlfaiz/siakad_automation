@@ -1,6 +1,8 @@
 import requests
 import tempfile
 import os
+import colorama
+from colorama import Fore, Style
 import time
 from datetime import datetime
 from selenium import webdriver
@@ -12,6 +14,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.common.exceptions import NoAlertPresentException
+
+colorama.init(autoreset=True)
+
+SUCCESS_ALERT = Style.BRIGHT+Fore.GREEN+"[Success]"+Fore.RESET+Style.RESET_ALL
+ERROR_ALERT = Style.BRIGHT+Fore.RED+"[Error]"+Fore.RESET+Style.RESET_ALL
+INFO_COLOR = Fore.YELLOW
+WARNING_COLOR = Fore.YELLOW
+LINK_COLOR = Fore.LIGHTBLUE_EX
+RESET_COLOR = Fore.RESET
 
 def save_html_as_txt(response_text):
     file_path = 'login_content.txt'  # Tentukan path atau nama file
@@ -45,7 +56,7 @@ def login(driver):
     login_content = driver.page_source
     save_html_as_txt(login_content)
     title = title_info(driver)
-    print(f"{title}")
+    print(f"{Style.BRIGHT}{title}")
 
     # Buat string bintang berdasarkan panjang password
     password_print = '*' * len(password)
@@ -58,12 +69,12 @@ def login(driver):
     # Wait
     wait = 3
     time.sleep(wait)
-    print(f"tunggu {wait} detik")
+    print(f"Tunggu: {wait} detik")
 
     # Input
     nim_id.send_keys(nim)
     password_id.send_keys(password)
-    print(f"input NIM: {nim} dan password: {password_print}")
+    print(f"{SUCCESS_ALERT} Input NIM: {INFO_COLOR}{nim}{RESET_COLOR} dan password : {INFO_COLOR}{password_print}")
 
     # Submit
     try:
@@ -71,9 +82,9 @@ def login(driver):
             EC.visibility_of_element_located((By.XPATH, "//button[@type='submit' and @name='Submit']"))
         )
         button.send_keys(Keys.ENTER)
-        print("Berhasil login")
+        print(f"{SUCCESS_ALERT} Login Berhasil ")
     except Exception as e :
-        print(f"Terdapat kesalahan: {e}")
+        print(f"{ERROR_ALERT} Terdapat kesalahan: {e}")
     time.sleep(wait)
 
 def jadwal(driver):
@@ -83,7 +94,7 @@ def jadwal(driver):
     time.sleep(tunggu)
     
     driver.get(jadwal_url)
-    print(f"berhasil masuk {jadwal_url}")
+    print(f"{SUCCESS_ALERT} berhasil masuk: {LINK_COLOR}{jadwal_url}")
 
 def get_kode_kelas():
     # aktifkan ini jika ingin otomatis
@@ -128,10 +139,15 @@ def masuk_absen(driver, kode_kelas):
         kelas_link = masuk_kelas_button.get_attribute('href')
 
         print(f"Link Masuk Kelas: {kelas_link}")
-
         # Arahkan driver ke link "Masuk Kelas"
         driver.get(kelas_link)
-        print(f"Berhasil mengakses: {kelas_link}")
+
+        title_kelas_element = driver.find_element(By.XPATH, "//section[@class='content-header' and contains(@style, 'background-color:#CCCCCC')]")
+        # Temukan teks info kelas
+        info_kelas = title_kelas_element.find_element(By.XPATH, ".//strong").text
+        
+        # Cetak hasilnya
+        print(f"Kelas: {info_kelas}")
 
     except Exception as e:
         print(f"Kode kelas tidak ditemukan atau error: {str(e)}")
