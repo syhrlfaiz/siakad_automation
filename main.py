@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoAlertPresentException
 
 def save_html_as_txt(response_text):
     file_path = 'login_content.txt'  # Tentukan path atau nama file
@@ -85,22 +86,22 @@ def jadwal(driver):
     print(f"berhasil masuk {jadwal_url}")
 
 def get_kode_kelas():
-    # # aktifkan ini jika ingin otomatis
-    # today=datetime.now().strftime("%A")
-    # # translate hari ke bahasa
-    # translate={
-    #     "Monday": "Senin",
-    #     "Tuesday": "Selasa",
-    #     "Wednesday": "Rabu",
-    #     "Thursday": "Kamis",
-    #     "Friday": "Jumat",
-    #     "Saturday": "Sabtu",
-    #     "Sunday": "Minggu"
-    # }
-    # hari=translate.get(today)
+    # aktifkan ini jika ingin otomatis
+    today=datetime.now().strftime("%A")
+    # translate hari ke bahasa
+    translate={
+        "Monday": "Senin",
+        "Tuesday": "Selasa",
+        "Wednesday": "Rabu",
+        "Thursday": "Kamis",
+        "Friday": "Jumat",
+        "Saturday": "Sabtu",
+        "Sunday": "Minggu"
+    }
+    hari=translate.get(today)
 
-    # aktifkan ini jika ingin hari manual
-    hari = "Jumat"
+    # # aktifkan ini jika ingin hari manual
+    # hari = "Jumat"
     print(f"hari : {hari}")
     
     # Mengembalikan kode kelas berdasarkan hari
@@ -143,6 +144,17 @@ def pertemuan(driver):
             break  # Berhenti jika absen berhasil
     else:
         print("Tidak ada absensi yang ditemukan dari P1 sampai P16")
+
+def handle_alert(driver):
+    try:
+        # Menunggu alert muncul dan menangkapnya
+        alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
+        alert_text = alert.text
+        print(f"Alert muncul: {alert_text}")
+        alert.accept()  # Menutup alert dengan mengklik OK
+        print("Alert berhasil ditutup")
+    except NoAlertPresentException:
+        print("Tidak ada alert yang muncul")
 
 def buka_pertemuan(driver, pertemuan):
     try:
@@ -206,7 +218,8 @@ def buka_pertemuan(driver, pertemuan):
 
             driver.switch_to.default_content()
             print("Berhasil keluar dari iframe")
-            # driver.send_keys(Keys.ENTER)
+
+            handle_alert(driver)
 
             return True  # Berhasil absen
         except:
