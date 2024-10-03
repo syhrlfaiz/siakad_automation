@@ -17,8 +17,12 @@ from selenium.common.exceptions import NoAlertPresentException
 
 colorama.init(autoreset=True)
 
-SUCCESS_ALERT = Style.BRIGHT+Fore.GREEN+"[Success]"+Fore.RESET+Style.RESET_ALL
+formatted_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+SUCCESS_ALERT = Style.BRIGHT+Fore.GREEN+"[✔️]"+Fore.RESET+Style.RESET_ALL
 ERROR_ALERT = Style.BRIGHT+Fore.RED+"[Error]"+Fore.RESET+Style.RESET_ALL
+INFO_ALERT = Style.BRIGHT+Fore.YELLOW+"[i]"+Fore.RESET+Style.RESET_ALL
+WARNING_ALERT = Style.BRIGHT+Fore.RED+"["+Fore.LIGHTYELLOW_EX+"!"+Fore.RED+"]"+Style.RESET_ALL
+SUCCESS_COLOR = Fore.LIGHTGREEN_EX
 INFO_COLOR = Fore.YELLOW
 WARNING_COLOR = Fore.YELLOW
 LINK_COLOR = Fore.LIGHTBLUE_EX
@@ -69,12 +73,12 @@ def login(driver):
     # Wait
     wait = 3
     time.sleep(wait)
-    print(f"Tunggu: {wait} detik")
+    print(f"{INFO_ALERT}Tunggu: {INFO_COLOR}{wait} detik")
 
     # Input
     nim_id.send_keys(nim)
     password_id.send_keys(password)
-    print(f"{SUCCESS_ALERT} Input NIM: {INFO_COLOR}{nim}{RESET_COLOR} dan password : {INFO_COLOR}{password_print}")
+    print(f"{SUCCESS_ALERT}Input NIM: {INFO_COLOR}{nim}{RESET_COLOR} dan password: {INFO_COLOR}{password_print}")
 
     # Submit
     try:
@@ -82,38 +86,38 @@ def login(driver):
             EC.visibility_of_element_located((By.XPATH, "//button[@type='submit' and @name='Submit']"))
         )
         button.send_keys(Keys.ENTER)
-        print(f"{SUCCESS_ALERT} Login Berhasil ")
+        print(f"{SUCCESS_ALERT}Login Berhasil ")
     except Exception as e :
-        print(f"{ERROR_ALERT} Terdapat kesalahan: {e}")
+        print(f"{ERROR_ALERT}Terdapat kesalahan: {e}")
     time.sleep(wait)
 
 def jadwal(driver):
     jadwal_url='https://siakad.stekom.ac.id/jadwalkuliahmahasiswa'
     tunggu=5
-    print(f"tunggu {tunggu} detik")
+    print(f"{INFO_ALERT}Tunggu: {INFO_COLOR}{tunggu} detik")
     time.sleep(tunggu)
     
     driver.get(jadwal_url)
-    print(f"{SUCCESS_ALERT} berhasil masuk: {LINK_COLOR}{jadwal_url}")
+    print(f"{SUCCESS_ALERT}Berhasil masuk: {LINK_COLOR}{jadwal_url}")
 
 def get_kode_kelas():
     # aktifkan ini jika ingin otomatis
-    today=datetime.now().strftime("%A")
-    # translate hari ke bahasa
-    translate={
-        "Monday": "Senin",
-        "Tuesday": "Selasa",
-        "Wednesday": "Rabu",
-        "Thursday": "Kamis",
-        "Friday": "Jumat",
-        "Saturday": "Sabtu",
-        "Sunday": "Minggu"
-    }
-    hari=translate.get(today)
+    # today=datetime.now().strftime("%A")
+    # # translate hari ke bahasa
+    # translate={
+    #     "Monday": "Senin",
+    #     "Tuesday": "Selasa",
+    #     "Wednesday": "Rabu",
+    #     "Thursday": "Kamis",
+    #     "Friday": "Jumat",
+    #     "Saturday": "Sabtu",
+    #     "Sunday": "Minggu"
+    # }
+    # hari=translate.get(today)
 
-    # # aktifkan ini jika ingin hari manual
-    # hari = "Jumat"
-    print(f"hari : {hari}")
+    # aktifkan ini jika ingin hari manual
+    hari = "Jumat"
+    print(f"{INFO_ALERT}Hari: {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}{hari}")
     
     # Mengembalikan kode kelas berdasarkan hari
     if hari == 'Senin':
@@ -128,6 +132,12 @@ def get_kode_kelas():
         return ['54871', '54868']
     else:
         return[]
+    
+def title_kelas(driver):
+        title_kelas_element = driver.find_element(By.XPATH, "//section[@class='content-header' and contains(@style, 'background-color:#CCCCCC')]")
+        # Temukan teks info kelas
+        kelas = title_kelas_element.find_element(By.XPATH, ".//strong").text
+        return kelas
 
 def masuk_absen(driver, kode_kelas):
     try:
@@ -138,39 +148,35 @@ def masuk_absen(driver, kode_kelas):
         masuk_kelas_button = row_element.find_element(By.XPATH, ".//following::a[contains(@class, 'btn-sm btn-primary')]")
         kelas_link = masuk_kelas_button.get_attribute('href')
 
-        print(f"Link Masuk Kelas: {kelas_link}")
         # Arahkan driver ke link "Masuk Kelas"
+        time.sleep(1)
         driver.get(kelas_link)
-
-        title_kelas_element = driver.find_element(By.XPATH, "//section[@class='content-header' and contains(@style, 'background-color:#CCCCCC')]")
-        # Temukan teks info kelas
-        info_kelas = title_kelas_element.find_element(By.XPATH, ".//strong").text
-        
-        # Cetak hasilnya
-        print(f"Kelas: {info_kelas}")
+        print(f"{SUCCESS_ALERT}Berhasil masuk kelas: {Style.BRIGHT}{INFO_COLOR}{title_kelas(driver)}")
+        print(f"{SUCCESS_ALERT}Link kelas: {LINK_COLOR}{kelas_link}")
 
     except Exception as e:
-        print(f"Kode kelas tidak ditemukan atau error: {str(e)}")
+        print(f"{ERROR_ALERT}Kode kelas tidak ditemukan atau error: {str(e)}")
 
 def pertemuan(driver):
     for pertemuan in range(1, 17):  # Cek dari P1 hingga P16
         berhasil = buka_pertemuan(driver, pertemuan)
         if berhasil:
-            print(f"Absen selesai di Pertemuan P{pertemuan}")
+            print(f"{INFO_ALERT}Absen selesai di {INFO_COLOR}Pertemuan {pertemuan}")
+            print(f"{SUCCESS_ALERT}{SUCCESS_COLOR}Berhasil absen pada {INFO_COLOR}Pertemuan {pertemuan} {RESET_COLOR}- {SUCCESS_COLOR}{formatted_time}")
             break  # Berhenti jika absen berhasil
     else:
-        print("Tidak ada absensi yang ditemukan dari P1 sampai P16")
+        print(f"{WARNING_ALERT}Tidak ada absensi yang ditemukan")
 
 def handle_alert(driver):
     try:
         # Menunggu alert muncul dan menangkapnya
         alert = WebDriverWait(driver, 5).until(EC.alert_is_present())
-        alert_text = alert.text
-        print(f"Alert muncul: {alert_text}")
+        # alert_text = alert.text
+        # print(f"{INFO_ALERT}{alert_text}")
         alert.accept()  # Menutup alert dengan mengklik OK
-        print("Alert berhasil ditutup")
+        print(f"{SUCCESS_ALERT}Alert berhasil ditutup")
     except NoAlertPresentException:
-        print("Tidak ada alert yang muncul")
+        print(f"{ERROR_ALERT}Tidak ada alert yang muncul")
 
 def buka_pertemuan(driver, pertemuan):
     try:
@@ -178,19 +184,19 @@ def buka_pertemuan(driver, pertemuan):
         pertemuan_element = driver.find_element(By.XPATH, f"//span[@class='modelhp pull-right' and contains(text(), 'P{pertemuan}')]/parent::a")
         # Ambil URL dari href di elemen
         pertemuan_link = pertemuan_element.get_attribute("href")
-        print(f"Link Pertemuan P{pertemuan}: {pertemuan_link}")
+        # print(f"Link Pertemuan P{pertemuan}: {pertemuan_link}")
         
         # Arahkan driver ke URL yang didapat
         driver.get(pertemuan_link)
-        print(f"Berhasil mengakses P{pertemuan}")
-        
+        print(f"{SUCCESS_ALERT}Berhasil mengakses: {INFO_COLOR}Pertemuan {pertemuan}")
+        print(f"{INFO_ALERT}Link {INFO_COLOR}Pertemuan {pertemuan}: {LINK_COLOR}{pertemuan_link}")
         # Tunggu sebentar untuk halaman load
         time.sleep(2)
         
         # Klik tab "Absensi"
         absensi_tab = driver.find_element(By.XPATH, "//a[@data-toggle='tab' and @href='#pesertakelaskelas']")
         absensi_tab.click()
-        print("Berhasil klik tab Absensi")
+        print(f"{SUCCESS_ALERT}Menuju ke {INFO_COLOR}tab 'Absensi'")
 
         # Tunggu agar tab Absensi terbuka
         time.sleep(2)
@@ -199,18 +205,18 @@ def buka_pertemuan(driver, pertemuan):
         try:
             absensi_button = driver.find_element(By.XPATH, "//button[@class='btn bnt-sm btn-primary' and contains(text(), 'Absensi sekarang')]")
             absensi_button.click()
-            print(f"Berhasil klik Absen Sekarang")
+            print(f"{SUCCESS_ALERT}Berhasil klik 'Absen Sekarang'")
 
-            print("tunggu 5 detik")
+            print(f"{INFO_ALERT}tunggu {INFO_COLOR}5 detik")
             time.sleep(5)
             # pindah iframe
             driver.switch_to.frame("modaliframepresensi")
-            print("switch iframe")
+            print(f"{INFO_ALERT}switch iframe")
 
             # Klik elemen label Baik
             baik_element = driver.find_element(By.XPATH, "//label[@onclick='cekdata(2)']")
             baik_element.click()
-            print("Berhasil klik opsi 'Baik'")
+            print(f"{SUCCESS_ALERT}Berhasil klik opsi 'Baik'")
 
             try:
                 time.sleep(2)
@@ -218,10 +224,10 @@ def buka_pertemuan(driver, pertemuan):
                 akan_hadir_button = driver.find_element(By.XPATH, "//li[@id='pp1']")
                 # Klik elemen tersebut
                 akan_hadir_button.click()
-                print("Berhasil klik 'Akan Hadir'")
+                print(f"{SUCCESS_ALERT}Berhasil klik 'Akan Hadir'")
 
             except NoSuchElementException:
-                print("Tombol 'Akan Hadir' tidak ditemukan, melanjutkan ke langkah berikutnya.")
+                print(f"{WARNING_ALERT}Tombol 'Akan Hadir' tidak ditemukan, melanjutkan ke langkah berikutnya.")
 
 
             # Tunggu hingga tombol Absen Daring (Online) muncul, lalu klik
@@ -230,35 +236,41 @@ def buka_pertemuan(driver, pertemuan):
             )
 
             absen_button.click()
-            print("Berhasil klik tombol 'Absen Daring (Online)'")
+            print(f"{SUCCESS_ALERT}Berhasil klik tombol 'Absen Daring (Online)'")
 
             driver.switch_to.default_content()
-            print("Berhasil keluar dari iframe")
+            print(f"{SUCCESS_ALERT}Berhasil keluar dari iframe")
 
             handle_alert(driver)
 
             return True  # Berhasil absen
         except:
-            print(f"Tidak ada tombol absensi di Pertemuan P{pertemuan}")
-            return False  # Tidak ada tombol absensi
+            try:
+                # Periksa keberadaan elemen alert 'SUDAH PRESENSI'
+                driver.find_element(By.XPATH, "//div[@class='alert alert-success']")
+                print(f"{SUCCESS_ALERT}{SUCCESS_COLOR}Sudah Absen pada {INFO_COLOR}Pertemuan {pertemuan}")
+            except NoSuchElementException:
+                print(f"{WARNING_ALERT}Dosen Belum mengupload materi")
+            return False 
+
     except Exception as e:
-        print(f"Error pada Pertemuan P{pertemuan}: {str(e)}")
+        print(f"{ERROR_ALERT}Error pada Pertemuan P{pertemuan}: {str(e)}")
     return False  # Ada kesalahan
 
 
 def absen(driver):
     kode_kelas_1, kode_kelas_2=get_kode_kelas()
     if kode_kelas_1:
-        print(f"masuk {kode_kelas_1}")
+        print(f"{INFO_ALERT}Kode Kelas: {INFO_COLOR}{kode_kelas_1}")
         masuk_absen(driver, kode_kelas_1)
         time.sleep(5)
         pertemuan(driver) #memanggil pertemuan
         time.sleep(5)
-        print("kembali ke Jadwal")
+        print(f"{INFO_ALERT}kembali ke Jadwal untuk mengakses kelas berikutnya")
         jadwal(driver)
     if kode_kelas_2:
         time.sleep(5)
-        print(f"masuk {kode_kelas_2}")
+        print(f"{INFO_ALERT}Kode Kelas: {INFO_COLOR}{kode_kelas_2}")
         masuk_absen(driver, kode_kelas_2)
         time.sleep(5)
         pertemuan(driver) #memanggil pertemuan
@@ -267,6 +279,13 @@ def absen(driver):
 def main():
     options = Options()
     options.binary_location = "/usr/bin/brave-browser"
+
+    # Headless option(agar tidak ada GUI) | nonaktifkan jika ingin dengan GUI
+    options.add_argument("--headless") # Tambahkan opsi headless
+    options.add_argument("--no-sandbox") # Untuk menjalankan dalam container
+    options.add_argument("--disable-dev-shm-usage") # Untuk mengatasi error resource
+    options.add_argument("--disable-gpu") # Nonaktifkan GPU
+    options.add_argument("--window-size=1920,1080") 
 
     # Inisialisasi webdriver
     service = Service('/usr/local/bin/chromedriver-linux64/chromedriver')
@@ -279,17 +298,17 @@ def main():
         login(driver)
         jadwal(driver)
         absen(driver)
-        print("Proses selesai tanpa error.")
+        print(f"{SUCCESS_ALERT}{SUCCESS_COLOR}Proses selesai tanpa error.")
     
     except Exception as e:
-        print(f"Terjadi error: {e}")
+        print(f"{ERROR_ALERT}Terjadi error: {e}")
     
     finally:
         if driver:
             try:
                 driver.close()  # Tutup tab yang aktif
                 driver.quit()   # Tutup seluruh sesi browser
-                print("Browser dan driver ditutup.")
+                print(f"{WARNING_ALERT}Browser dan driver ditutup.")
             except Exception as e:
                 print(f"Error saat menutup browser: {e}")
 
