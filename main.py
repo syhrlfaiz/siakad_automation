@@ -14,6 +14,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.common.exceptions import NoAlertPresentException
+from telegram_utils import send_telegram_message
+import asyncio
+
 
 colorama.init(autoreset=True)
 
@@ -163,6 +166,10 @@ def pertemuan(driver):
         if berhasil:
             print(f"{INFO_ALERT}Absen selesai di {INFO_COLOR}Pertemuan {pertemuan}")
             print(f"{SUCCESS_ALERT}{SUCCESS_COLOR}Berhasil absen pada {INFO_COLOR}Pertemuan {pertemuan} {RESET_COLOR}- {SUCCESS_COLOR}{formatted_time}")
+            message = (f"BERHASIL ABSEN \n"
+                       f"Absen: {title_kelas}\n"
+                       f"Pada: {formatted_time}")
+            asyncio.run(send_telegram_message(message))
             break  # Berhenti jika absen berhasil
     else:
         print(f"{WARNING_ALERT}Tidak ada absensi yang ditemukan")

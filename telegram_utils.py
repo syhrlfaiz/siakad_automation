@@ -16,12 +16,14 @@ api_credentials = read_api_credentials('telegram_api.txt')
 api_id = int(api_credentials['api_id'])
 api_hash = api_credentials['api_hash']
 phone_number = api_credentials['phone_number']
-receiver_id = api_credentials['receiver_id']
+receiver_username = api_credentials['receiver_username']
 
-client = TelegramClient('session_name', api_id, api_hash)
+# sesuaikan nama session jika punya .session / buat nama baru
+session_name = 'aye'
+client = TelegramClient(session_name, api_id, api_hash)
 
 async def send_telegram_message(message):
     # Start the client session
     async with client:
-        await client.send_message(receiver_id, message)
-        print("Pesan berhasil dikirim!")
+        await client.send_message(receiver_username, message)
+        print(f"Pesan berhasil dikirim ke {receiver_username}")
