@@ -102,21 +102,21 @@ def jadwal(driver):
 
 def get_kode_kelas():
     # aktifkan ini jika ingin otomatis
-    # today=datetime.now().strftime("%A")
-    # # translate hari ke bahasa
-    # translate={
-    #     "Monday": "Senin",
-    #     "Tuesday": "Selasa",
-    #     "Wednesday": "Rabu",
-    #     "Thursday": "Kamis",
-    #     "Friday": "Jumat",
-    #     "Saturday": "Sabtu",
-    #     "Sunday": "Minggu"
-    # }
-    # hari=translate.get(today)
+    today=datetime.now().strftime("%A")
+    # translate hari ke bahasa
+    translate={
+        "Monday": "Senin",
+        "Tuesday": "Selasa",
+        "Wednesday": "Rabu",
+        "Thursday": "Kamis",
+        "Friday": "Jumat",
+        "Saturday": "Sabtu",
+        "Sunday": "Minggu"
+    }
+    hari=translate.get(today)
 
-    # aktifkan ini jika ingin hari manual
-    hari = "Jumat"
+    # # aktifkan ini jika ingin hari manual
+    # hari = "Jumat"
     print(f"{INFO_ALERT}Hari: {Style.BRIGHT}{Fore.LIGHTYELLOW_EX}{hari}")
     
     # Mengembalikan kode kelas berdasarkan hari
