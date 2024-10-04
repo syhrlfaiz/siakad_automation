@@ -1,4 +1,8 @@
 from telethon import TelegramClient
+from colorama import Fore, Style
+
+SUCCESS_ALERT = Style.BRIGHT+Fore.GREEN+"[✔️]"+Fore.RESET+Style.RESET_ALL
+INFO_COLOR = Fore.YELLOW
 
 # Fungsi untuk membaca API ID, Hash, dan informasi lain dari file .txt
 def read_api_credentials(file_path):
@@ -26,4 +30,4 @@ async def send_telegram_message(message):
     # Start the client session
     async with client:
         await client.send_message(receiver_username, message)
-        print(f"Pesan berhasil dikirim ke {receiver_username}")
+        print(f"{SUCCESS_ALERT}Dikirim ke: {INFO_COLOR}{receiver_username}")

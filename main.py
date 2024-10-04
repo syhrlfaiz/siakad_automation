@@ -167,9 +167,9 @@ def pertemuan(driver):
             print(f"{INFO_ALERT}Absen selesai di {INFO_COLOR}Pertemuan {pertemuan}")
             print(f"{SUCCESS_ALERT}{SUCCESS_COLOR}Berhasil absen pada {INFO_COLOR}Pertemuan {pertemuan} {RESET_COLOR}- {SUCCESS_COLOR}{formatted_time}")
             message = (f"BERHASIL ABSEN \n"
-                       f"Absen: {title_kelas}\n"
+                       f"Absen: {title_kelas(driver)}\n"
                        f"Pada: {formatted_time}")
-            asyncio.run(send_telegram_message(message))
+            send_telegram_message(message)
             break  # Berhenti jika absen berhasil
     else:
         print(f"{WARNING_ALERT}Tidak ada absensi yang ditemukan")
