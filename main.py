@@ -166,10 +166,7 @@ def pertemuan(driver):
         if berhasil:
             print(f"{INFO_ALERT}Absen selesai di {INFO_COLOR}Pertemuan {pertemuan}")
             print(f"{SUCCESS_ALERT}{SUCCESS_COLOR}Berhasil absen pada {INFO_COLOR}Pertemuan {pertemuan} {RESET_COLOR}- {SUCCESS_COLOR}{formatted_time}")
-            message = (f"BERHASIL ABSEN \n"
-                       f"Absen: {title_kelas(driver)}\n"
-                       f"Pada: {formatted_time}")
-            send_telegram_message(message)
+
             break  # Berhenti jika absen berhasil
     else:
         print(f"{WARNING_ALERT}Tidak ada absensi yang ditemukan")
@@ -185,7 +182,7 @@ def handle_alert(driver):
     except NoAlertPresentException:
         print(f"{ERROR_ALERT}Tidak ada alert yang muncul")
 
-def buka_pertemuan(driver, pertemuan):
+async def buka_pertemuan(driver, pertemuan):
     try:
         # Cari elemen berdasarkan pertemuan P1, P2, ..., P16
         pertemuan_element = driver.find_element(By.XPATH, f"//span[@class='modelhp pull-right' and contains(text(), 'P{pertemuan}')]/parent::a")
@@ -249,6 +246,15 @@ def buka_pertemuan(driver, pertemuan):
             print(f"{SUCCESS_ALERT}Berhasil keluar dari iframe")
 
             handle_alert(driver)
+
+            message = (f"🔔SIAKAD AUTOMATION🔔\n"
+                       f"\n"
+                       f"BERHASIL ABSEN [✓]\n"
+                       f"``````````````````\n"
+                       f"✏️ {title_kelas(driver)}\n"
+                       f"📍Pertemuan {pertemuan}"
+                       f"⏰{formatted_time}")
+            await send_telegram_message(message)
 
             return True  # Berhasil absen
         except:
