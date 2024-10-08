@@ -1,4 +1,6 @@
 .env
-.session
+*.session
 telegram_api.txt
 login_detail.txt
+login_content.txt
+__pycache__
