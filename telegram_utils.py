@@ -1,32 +1,36 @@
-from telethon import TelegramClient
-from colorama import Fore, Style
+from telethon.sync import TelegramClient
 
-SUCCESS_ALERT = Style.BRIGHT+Fore.GREEN+"[✔️]"+Fore.RESET+Style.RESET_ALL
-INFO_COLOR = Fore.YELLOW
+class TelegramBot:
+    def __init__(self, config_file='telegram_api.txt'):
+        self.client = None
+        self.config = self.read_config(config_file)
 
-# Fungsi untuk membaca API ID, Hash, dan informasi lain dari file .txt
-def read_api_credentials(file_path):
-    credentials = {}
-    with open(file_path, 'r') as file:
-        for line in file:
-            key, value = line.strip().split('=')
-            credentials[key] = value
-    return credentials
+    def read_config(self, file_path):
+        config = {}
+        with open(file_path, 'r') as f:
+            for line in f:
+                key, value = line.strip().split('=')
+                config[key] = value
+        return config
 
-# Baca API dari file
-api_credentials = read_api_credentials('telegram_api.txt')
+    async def send_message(self, message):
+        if self.client is None:
+            print("Inisialisasi client...")
+            api_id = self.config['api_id']
+            api_hash = self.config['api_hash']
+            session_name = 'aye'
+            
+            # Inisialisasi Telethon Client
+            self.client = TelegramClient(session_name, api_id, api_hash)
+            await self.client.start()  # Mulai client dan otentikasi
 
-# Ekstrak nilai dari dict
-api_id = int(api_credentials['api_id'])
-api_hash = api_credentials['api_hash']
-phone_number = api_credentials['phone_number']
-receiver_username = api_credentials['receiver_username']
+        chat_id = self.config['receiver_username']
+        await self.client.send_message(chat_id, message)
 
-# sesuaikan nama session jika punya .session / buat nama baru
-session_name = 'aye'
-client = TelegramClient(session_name, api_id, api_hash)
+    def send_telegram(self, message):
+        import asyncio
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.send_message(message))
 
-async def send_telegram_message(message):
-    # Start the client session
-    await client.send_message(receiver_username, message)
-    print(f"{SUCCESS_ALERT}Dikirim ke: {INFO_COLOR}{receiver_username}")
+# Inisialisasi bot
+telegram_bot = TelegramBot()

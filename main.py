@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.common.exceptions import NoAlertPresentException
-from telegram_utils import send_telegram_message
+from telegram_utils import telegram_bot
 import asyncio
 
 
@@ -89,7 +89,8 @@ def login(driver):
             EC.visibility_of_element_located((By.XPATH, "//button[@type='submit' and @name='Submit']"))
         )
         button.send_keys(Keys.ENTER)
-        print(f"{SUCCESS_ALERT}Login Berhasil ")
+        print(f"{SUCCESS_ALERT} Login berhasil")
+
     except Exception as e :
         print(f"{ERROR_ALERT}Terdapat kesalahan: {e}")
     time.sleep(wait)
@@ -250,11 +251,12 @@ def buka_pertemuan(driver, pertemuan):
             message = (f"🔔SIAKAD AUTOMATION🔔\n"
                        f"\n"
                        f"BERHASIL ABSEN [✓]\n"
-                       f"``````````````````\n"
+                       f"\n"
                        f"✏️ {title_kelas(driver)}\n"
-                       f"📍Pertemuan {pertemuan}"
+                       f"📍Pertemuan {pertemuan}\n"
                        f"⏰{formatted_time}")
-            send_telegram_message(message)
+
+            telegram_bot.send_telegram(message)
 
             return True  # Berhasil absen
         except:
@@ -269,7 +271,6 @@ def buka_pertemuan(driver, pertemuan):
     except Exception as e:
         print(f"{ERROR_ALERT}Error pada Pertemuan P{pertemuan}: {str(e)}")
     return False  # Ada kesalahan
-
 
 def absen(driver):
     kode_kelas_1, kode_kelas_2=get_kode_kelas()
