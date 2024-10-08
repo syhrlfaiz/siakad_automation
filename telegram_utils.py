@@ -28,6 +28,5 @@ client = TelegramClient(session_name, api_id, api_hash)
 
 async def send_telegram_message(message):
     # Start the client session
-    async with client:
-        await client.send_message(receiver_username, message)
-        print(f"{SUCCESS_ALERT}Dikirim ke: {INFO_COLOR}{receiver_username}")
+    await client.send_message(receiver_username, message)
+    print(f"{SUCCESS_ALERT}Dikirim ke: {INFO_COLOR}{receiver_username}")

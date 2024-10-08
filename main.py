@@ -182,7 +182,7 @@ def handle_alert(driver):
     except NoAlertPresentException:
         print(f"{ERROR_ALERT}Tidak ada alert yang muncul")
 
-async def buka_pertemuan(driver, pertemuan):
+def buka_pertemuan(driver, pertemuan):
     try:
         # Cari elemen berdasarkan pertemuan P1, P2, ..., P16
         pertemuan_element = driver.find_element(By.XPATH, f"//span[@class='modelhp pull-right' and contains(text(), 'P{pertemuan}')]/parent::a")
@@ -254,7 +254,7 @@ async def buka_pertemuan(driver, pertemuan):
                        f"✏️ {title_kelas(driver)}\n"
                        f"📍Pertemuan {pertemuan}"
                        f"⏰{formatted_time}")
-            await send_telegram_message(message)
+            send_telegram_message(message)
 
             return True  # Berhasil absen
         except:
