@@ -248,13 +248,32 @@ def buka_pertemuan(driver, pertemuan):
 
             handle_alert(driver)
 
+            try:
+                diskusi_tab = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//a[@data-toggle='tab' and @href='#Forum' and contains(@onclick, 'tabmenu')]"))
+                )
+                diskusi_tab.click()
+                print(f"{SUCCESS_ALERT}Berhasil klik tab 'Diskusi'")
+            except TimeoutException:
+                print(f"{ERROR_ALERT}Elemen 'Diskusi' tidak ditemukan atau tidak dapat diklik")
+
+            try:
+                materi_element = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//div[@class='overlay-video']/a[@class='popup-youtube video-play-button']"))
+                )
+                materi_link = materi_element.get_attribute('href')
+                print(f"{SUCCESS_ALERT}Link materi: {LINK_COLOR}{materi_link}")
+            except TimeoutException:
+                print(f"{ERROR_ALERT}Materi link tidak ditemukan")
+
             message = (f"🔔SIAKAD AUTOMATION🔔\n"
                        f"\n"
                        f"BERHASIL ABSEN [✓]\n"
                        f"\n"
                        f"✏️ {title_kelas(driver)}\n"
-                       f"📍Pertemuan {pertemuan}\n"
-                       f"⏰{formatted_time}")
+                       f"📍 Pertemuan {pertemuan}\n"
+                       f"⏰ {formatted_time}\n"
+                       f"🔗 {materi_link}")
 
             telegram_bot.send_telegram(message)
 
