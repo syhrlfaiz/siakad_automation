@@ -20,7 +20,6 @@ import asyncio
 
 colorama.init(autoreset=True)
 
-formatted_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 SUCCESS_ALERT = Style.BRIGHT+Fore.GREEN+"[✔️]"+Fore.RESET+Style.RESET_ALL
 ERROR_ALERT = Style.BRIGHT+Fore.RED+"[Error]"+Fore.RESET+Style.RESET_ALL
 INFO_ALERT = Style.BRIGHT+Fore.YELLOW+"[i]"+Fore.RESET+Style.RESET_ALL
@@ -31,11 +30,11 @@ WARNING_COLOR = Fore.YELLOW
 LINK_COLOR = Fore.LIGHTBLUE_EX
 RESET_COLOR = Fore.RESET
 
-def save_html_as_txt(response_text):
-    file_path = 'login_content.txt'  # Tentukan path atau nama file
-    with open(file_path, 'w', encoding='utf-8') as file:
-        file.write(response_text)
-    return file_path
+# def save_html_as_txt(response_text):
+#     file_path = 'login_content.txt'  # Tentukan path atau nama file
+#     with open(file_path, 'w', encoding='utf-8') as file:
+#         file.write(response_text)
+#     return file_path
 
 def title_info(driver):
     title = WebDriverWait(driver, 10).until(
@@ -60,8 +59,8 @@ def login(driver):
 
     # Membuka halaman login
     driver.get(login_url)
-    login_content = driver.page_source
-    save_html_as_txt(login_content)
+    # login_content = driver.page_source
+    # save_html_as_txt(login_content)
     title = title_info(driver)
     print(f"{Style.BRIGHT}{title}")
 
@@ -125,7 +124,7 @@ def get_kode_kelas():
     
     # Mengembalikan kode kelas berdasarkan hari
     if hari == 'Senin':
-        return [None]
+        return [None , None]
     elif hari == 'Selasa':
         return ['54955',None]
     elif hari == 'Rabu':
@@ -134,7 +133,11 @@ def get_kode_kelas():
         return ['54870', '53535']
     elif hari == 'Jumat':
         return ['54871', '54868']
-    else:
+    elif hari == 'Sabtu':
+        return [None , None]
+    elif hari == 'Minggu':
+        return [None , None]
+    else :
         return[]
     
 def title_kelas(driver):
@@ -165,9 +168,10 @@ def pertemuan(driver):
     for pertemuan in range(1, 17):  # Cek dari P1 hingga P16
         berhasil = buka_pertemuan(driver, pertemuan)
         if berhasil:
+            time_now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
             print(f"{INFO_ALERT}Absen selesai di {INFO_COLOR}Pertemuan {pertemuan}")
-            print(f"{SUCCESS_ALERT}{SUCCESS_COLOR}Berhasil absen pada {INFO_COLOR}Pertemuan {pertemuan} {RESET_COLOR}- {SUCCESS_COLOR}{formatted_time}")
-
+            print(f"{SUCCESS_ALERT}{SUCCESS_COLOR}Berhasil absen pada {INFO_COLOR}Pertemuan {pertemuan} {RESET_COLOR}- {SUCCESS_COLOR}{time_now}")
+        
             break  # Berhenti jika absen berhasil
     else:
         print(f"{WARNING_ALERT}Tidak ada absensi yang ditemukan")
@@ -266,14 +270,15 @@ def buka_pertemuan(driver, pertemuan):
             except TimeoutException:
                 print(f"{ERROR_ALERT}Materi link tidak ditemukan")
 
-            message = (f"🔔SIAKAD AUTOMATION🔔\n"
+            time_now = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            message = (f"🔔**SIAKAD AUTOMATION**🔔\n"
                        f"\n"
                        f"BERHASIL ABSEN [✓]\n"
                        f"\n"
                        f"✏️ {title_kelas(driver)}\n"
                        f"📍 Pertemuan {pertemuan}\n"
-                       f"⏰ {formatted_time}\n"
-                       f"🔗 {materi_link}")
+                       f"⏰ {time_now}\n"
+                       f"🔗 {materi_link}\n")
 
             telegram_bot.send_telegram(message)
 
