@@ -5,3 +5,4 @@ login_detail.txt
 login_content.txt
 __pycache__
 script.sh
+*.log
