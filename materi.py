@@ -12,17 +12,23 @@ from main import login, jadwal  # Importing the login and jadwal functions from 
 
 def select_kode_kelas():
     print("Pilih kode kelas:")
-    print("1. 54955")
-    print("2. 54869")
-    print("3. 54870")
-    print("4. 54871")
-    pilihan = input("Masukkan pilihan (1/2/3/4): ")
+    print("1. Administrator Jaringan dan Database [54955]")
+    print("2. Aplikasi Pemrograman Web [54869]")
+    print("3. Metode Penelitian [54870]")
+    print("4. Aplikasi Pemrograman Visual [54871]")
+    print("5. Rekayasa Perangkat Lunak 2 [53535]")
+    print("6. Pemrogrraman Mobile 2 [54871]")
+    print("7. Technoprenuership [54868]")
+    pilihan = input("Masukkan pilihan (angka): ")
 
     kode_kelas_dict = {
         "1": "54955",
         "2": "54869",
         "3": "54870",
-        "4": "54871"
+        "4": "54871",
+        "5": "53535",
+        "6": "54871",
+        "7": "54868"
     }
     return kode_kelas_dict.get(pilihan, None)
 

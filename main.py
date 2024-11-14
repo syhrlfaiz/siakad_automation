@@ -223,7 +223,9 @@ def buka_pertemuan(driver, pertemuan):
             print(f"{INFO_ALERT}switch iframe")
 
             # Klik elemen label Baik
-            baik_element = driver.find_element(By.XPATH, "//label[@onclick='cekdata(2)']")
+            baik_element = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//label[@onclick='cekdata(2)']"))
+            )
             baik_element.click()
             print(f"{SUCCESS_ALERT}Berhasil klik opsi 'Baik'")
 
