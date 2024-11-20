@@ -21,8 +21,11 @@ Buat file bernama `telegram_api.txt`
 | `receiver_username=` |
 
 note :
+
 `api_id` dan `api_hash` register https://my.telegram.org/apps
+
 `phone` nomor telepon telegram yang di daftarkan
+
 `receiver_username` username telegram yang akan menerima pesan
 
 ## Buat venv
@@ -38,6 +41,7 @@ deactivate :
 # How Run Automation
 
 Auto absensi `python main.py`
+
 Untuk mendapatkan link dari semua materi pertemuan yang tersedia `python materi.py`
 
 ![GitHub](https://img.shields.io/github/languages/top/username/repository?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-brightgreen)
