@@ -95,7 +95,7 @@ def main():
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920,1080")
 
-    service = Service('/usr/local/bin/chromedriver-linux64/chromedriver')
+    service = Service('/home/syhrlfaiz/Applications/chromedriver-linux64/chromedriver')
     driver = None
 
     try:
